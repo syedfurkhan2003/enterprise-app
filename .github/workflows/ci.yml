@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -43,16 +42,24 @@ jobs:
 
       - name: Build Backend Image
         run: |
-          docker build -t syedfurkhan/enterprise-backend:latest ./backend
+          docker build \
+            -t syedfurkhan/enterprise-backend:latest \
+            -t syedfurkhan/enterprise-backend:${{ github.sha }} \
+            ./backend
 
       - name: Build Frontend Image
         run: |
-          docker build -t syedfurkhan/enterprise-frontend:latest ./frontend
+          docker build \
+            -t syedfurkhan/enterprise-frontend:latest \
+            -t syedfurkhan/enterprise-frontend:${{ github.sha }} \
+            ./frontend
 
       - name: Push Backend Image
         run: |
           docker push syedfurkhan/enterprise-backend:latest
+          docker push syedfurkhan/enterprise-backend:${{ github.sha }}
 
       - name: Push Frontend Image
         run: |
           docker push syedfurkhan/enterprise-frontend:latest
+          docker push syedfurkhan/enterprise-frontend:${{ github.sha }}
