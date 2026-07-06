@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -18,33 +17,42 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-            - name: Check Secrets
-        run: |
-          echo "Username = '${{ secrets.DOCKER_USERNAME }}'"
-          echo "Username Length = ${#DOCKER_USERNAME}"
-          echo "Password Length = ${#DOCKER_PASSWORD}"
+      - name: Verify Secrets Exist
+        shell: bash
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          if [ -z "$DOCKER_USERNAME" ]; then
+            echo "DOCKER_USERNAME is EMPTY"
+            exit 1
+          fi
+
+          if [ -z "$DOCKER_PASSWORD" ]; then
+            echo "DOCKER_PASSWORD is EMPTY"
+            exit 1
+          fi
+
+          echo "Both secrets exist."
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: syedfurkhan
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Backend Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/enterprise-backend:latest ./backend
+          docker build -t syedfurkhan/enterprise-backend:latest ./backend
 
       - name: Build Frontend Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/enterprise-frontend:latest ./frontend
+          docker build -t syedfurkhan/enterprise-frontend:latest ./frontend
 
       - name: Push Backend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/enterprise-backend:latest
+          docker push syedfurkhan/enterprise-backend:latest
 
       - name: Push Frontend Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/enterprise-frontend:latest
+          docker push syedfurkhan/enterprise-frontend:latest
