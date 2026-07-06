@@ -7,9 +7,21 @@ on:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Image
+        run: |
+          docker build -t enterprise-backend:latest ./backend
+
+      - name: Build Frontend Image
+        run: |
+          docker build -t enterprise-frontend:latest ./frontend
